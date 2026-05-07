@@ -6,7 +6,7 @@ test('user can open the cart', async ({ loginPage, generalPage }) => {
   await loginPage.goto();
   await generalPage.gotoCart();
   await generalPage.expectCartPage();
-  await expect(generalPage.page).toHaveScreenshot('cart-page.png');
+  await expect(generalPage.page).toHaveScreenshot('caort-page.png');
 });
 
 test('user can add item to cart and see it in the cart', async ({ loginPage, generalPage }) => {
