@@ -8,7 +8,6 @@ import { CheckoutPage } from '../pages/checkoutPage.js';
 
 /**
  * @typedef {Object} Fixtures
- * @property {import('@playwright/test').Page} page
  * @property {LoginPage} loginPage
  * @property {GeneralPage} generalPage
  * @property {InventoryPage} inventoryPage
@@ -17,11 +16,17 @@ import { CheckoutPage } from '../pages/checkoutPage.js';
  */
 
 /**
+ * @typedef {import('@playwright/test').PlaywrightTestArgs &
+ *   import('@playwright/test').PlaywrightTestOptions &
+ *   Fixtures} TestFixtures
+ */
+
+/**
  * @typedef {import('@playwright/test').PlaywrightWorkerArgs &
  *   import('@playwright/test').PlaywrightWorkerOptions} WorkerFixtures
  */
 
-/** @type {import('@playwright/test').TestType<Fixtures, WorkerFixtures>} */
+/** @type {import('@playwright/test').TestType<TestFixtures, WorkerFixtures>} */
 export const test = base.extend({
   loginPage: async ({ page }, use) => {
     const loginPage = new LoginPage(page);
