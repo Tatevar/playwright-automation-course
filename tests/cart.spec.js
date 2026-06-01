@@ -1,32 +1,43 @@
-import { test, expect } from '../playwright/fixtures.js';
-import { GeneralPage } from '../pages/generalPage.js';
+import { test } from '../playwright/fixtures.js';
+import { products } from '../data/testData.js';
 
+test.describe('cart', () => {
+  test('authenticated shopper can open an empty cart', async ({ cartPage }) => {
+    await cartPage.goto();
 
-test('user can open the cart', async ({ loginPage, generalPage }) => {
-  await loginPage.goto();
-  await generalPage.gotoCart();
-  await generalPage.expectCartPage();
-  await expect(generalPage.page).toHaveScreenshot('cart-page.png');
-});
+    await cartPage.expectLoaded();
+    await cartPage.expectEmpty();
+  });
 
-test('user can add item to cart and see it in the cart', async ({ loginPage, generalPage }) => {
-  await loginPage.goto();
-  await generalPage.gotoInventory();
-  await loginPage.page.getByRole('button', { name: 'Add to cart', exact: true }).first().click();
-  await generalPage.gotoCart();
-  await expect(loginPage.page.getByText('Sauce Labs Backpack')).toBeVisible();
-    await expect(generalPage.page).toHaveScreenshot('cart-page-with-item.png');
+  test('shopper can add a product and see it in the cart', async ({ inventoryPage, cartPage }) => {
+    await inventoryPage.goto();
+    await inventoryPage.addProductToCart(products.backpack);
+    await inventoryPage.expectCartBadge(1);
 
-});
+    await inventoryPage.openCart();
 
-test('user can remove item from cart and see it removed', async ({ loginPage, generalPage }) => {
-  await loginPage.goto();
-  await generalPage.gotoInventory();
-  await loginPage.page.getByRole('button', { name: 'Add to cart', exact: true }).first().click();
-  await generalPage.gotoCart();
-  await expect(loginPage.page.getByText('Sauce Labs Backpack')).toBeVisible();
-  await loginPage.page.getByRole('button', { name: 'Remove', exact: true }).first().click();
-  await expect(loginPage.page.getByText('Sauce Labs Backpack')).not.toBeVisible();
-    await expect(generalPage.page).toHaveScreenshot('cart-page-removed.png');
+    await cartPage.expectLoaded();
+    await cartPage.expectProductNames([products.backpack]);
+  });
 
+  test('shopper can remove a product from the cart', async ({ inventoryPage, cartPage }) => {
+    await inventoryPage.goto();
+    await inventoryPage.addProductToCart(products.backpack);
+
+    await inventoryPage.openCart();
+    await cartPage.removeProduct(products.backpack);
+
+    await cartPage.expectEmpty();
+  });
+
+  test('shopper can continue shopping from the cart', async ({ inventoryPage, cartPage }) => {
+    await inventoryPage.goto();
+    await inventoryPage.addProductToCart(products.backpack);
+
+    await inventoryPage.openCart();
+    await cartPage.continueShopping();
+
+    await inventoryPage.expectLoaded();
+    await inventoryPage.expectCartBadge(1);
+  });
 });
